@@ -1,1 +1,117 @@
-placeholder
+if game.CoreGui:FindFirstChild("LimitHubUI") then
+    game.CoreGui:FindFirstChild("LimitHubUI"):Destroy()
+end
+
+local LimitHubUI = Instance.new("ScreenGui")
+LimitHubUI.Name = "LimitHubUI"
+LimitHubUI.Parent = game:GetService("CoreGui")
+LimitHubUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+LimitHubUI.ResetOnSpawn = false
+
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Parent = LimitHubUI
+main.BackgroundColor3 = Color3.fromRGB(30, 80, 180)
+main.BorderSizePixel = 0
+main.Position = UDim2.new(0.3, 0, 0.3, 0)
+main.Size = UDim2.new(0, 400, 0, 200)
+
+-- Make moveable (mouse and touch)
+main.Active = true
+main.Draggable = false
+
+local UserInputService = game:GetService("UserInputService")
+local dragging, dragInput, dragStart, startPos
+
+local function update(input)
+	if not dragging then return end
+	local delta = input.Position - dragStart
+	main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+main.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		dragging = true
+		dragStart = input.Position
+		startPos = main.Position
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+main.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+		dragInput = input
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if input == dragInput then
+		update(input)
+	end
+end)
+
+local title = Instance.new("TextLabel")
+title.Parent = main
+title.BackgroundTransparency = 1
+title.Position = UDim2.new(0, 0, 0, 10)
+title.Size = UDim2.new(1, 0, 0, 40)
+title.Font = Enum.Font.GothamBold
+title.Text = "LimitHub"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 30
+title.TextStrokeTransparency = 0.7
+
+local subtitle = Instance.new("TextLabel")
+subtitle.Parent = main
+subtitle.BackgroundTransparency = 1
+subtitle.Position = UDim2.new(0.05, 0, 0.3, 0)
+subtitle.Size = UDim2.new(0.9, 0, 0.3, 0)
+subtitle.Font = Enum.Font.Gotham
+subtitle.TextWrapped = true
+subtitle.Text = "Please wait for the script to load, as it must bypass the anticheat. If it says you are redirected, please wait 2-3 minutes before it lets you back in!"
+subtitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+subtitle.TextSize = 14
+
+local loadingBarBG = Instance.new("Frame")
+loadingBarBG.Parent = main
+loadingBarBG.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+loadingBarBG.Position = UDim2.new(0.05, 0, 0.75, 0)
+loadingBarBG.Size = UDim2.new(0.9, 0, 0.1, 0)
+
+local loadingBar = Instance.new("Frame")
+loadingBar.Parent = loadingBarBG
+loadingBar.BackgroundColor3 = Color3.fromRGB(0, 200, 255)
+loadingBar.Size = UDim2.new(0, 0, 1, 0)
+
+local percentText = Instance.new("TextLabel")
+percentText.Parent = loadingBarBG
+percentText.BackgroundTransparency = 1
+percentText.Size = UDim2.new(1, 0, 1, 0)
+percentText.Position = UDim2.new(0, 0, 0, 0)
+percentText.Text = "Loading... 0%"
+percentText.Font = Enum.Font.Gotham
+percentText.TextColor3 = Color3.fromRGB(255, 255, 255)
+percentText.TextSize = 14
+
+-- Progress loop (5 minutes = 300 seconds)
+spawn(function()
+    local duration = 300 -- seconds
+    local interval = 0.5
+    local steps = duration / interval
+
+    for i = 1, steps do
+        local progress = i / steps
+        loadingBar.Size = UDim2.new(progress, 0, 1, 0)
+        percentText.Text = string.format("Loading... %d%%", math.floor(progress * 100))
+        task.wait(interval)
+    end
+
+    LimitHubUI:Destroy()
+
+    -- Execute your provided script
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/FakeModz/LimitHub/refs/heads/main/LimitHub_Luarmor_E.lua"))()
+end)
