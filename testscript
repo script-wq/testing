@@ -1,19 +1,18 @@
--- Void Trade Freeze GUI by Void Scripts
+-- Void Trade Freeze GUI by Void Scripts (Draggable Fixed)
 
--- Clean up any existing GUI
 pcall(function()
     game.CoreGui:FindFirstChild("VoidTradeFreezeGUI"):Destroy()
 end)
 
 local playerGui = game:GetService("CoreGui")
 
--- Create ScreenGui container
+-- ScreenGui
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "VoidTradeFreezeGUI"
 screenGui.Parent = playerGui
 screenGui.ResetOnSpawn = false
 
--- Intro Text Label (smaller now)
+-- Intro Label (smaller)
 local creditLabel = Instance.new("TextLabel")
 creditLabel.Size = UDim2.new(0.6, 0, 0.2, 0)
 creditLabel.Position = UDim2.new(0.2, 0, 0.4, 0)
@@ -42,23 +41,20 @@ end
 
 creditLabel:Destroy()
 
--- Main Frame
+-- Main GUI Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 300, 0, 150)
 mainFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
 mainFrame.BorderSizePixel = 0
 mainFrame.BackgroundTransparency = 0.2
-mainFrame.Active = true
-mainFrame.Draggable = true -- 🟣 Make GUI draggable
 mainFrame.Parent = screenGui
 
--- Frame corner rounding
 local corner = Instance.new("UICorner")
 corner.CornerRadius = UDim.new(0, 12)
 corner.Parent = mainFrame
 
--- Title Bar
+-- Title Bar (drag handle)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0.3, 0)
 title.Position = UDim2.new(0, 0, 0, 0)
@@ -68,6 +64,42 @@ title.Font = Enum.Font.GothamBlack
 title.TextScaled = true
 title.TextColor3 = Color3.fromRGB(200, 0, 255)
 title.Parent = mainFrame
+
+-- Make title draggable (moves entire mainFrame)
+local dragging = false
+local dragInput, mousePos, framePos
+
+title.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		mousePos = input.Position
+		framePos = mainFrame.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+title.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		local delta = input.Position - mousePos
+		mainFrame.Position = UDim2.new(
+			framePos.X.Scale,
+			framePos.X.Offset + delta.X,
+			framePos.Y.Scale,
+			framePos.Y.Offset + delta.Y
+		)
+	end
+end)
 
 -- Toggle Button
 local toggle = Instance.new("TextButton")
@@ -84,13 +116,13 @@ local toggleCorner = Instance.new("UICorner")
 toggleCorner.CornerRadius = UDim.new(0, 8)
 toggleCorner.Parent = toggle
 
--- Glow Stroke
+-- Stroke
 local uiStroke = Instance.new("UIStroke")
 uiStroke.Thickness = 2
 uiStroke.Color = Color3.fromRGB(255, 0, 255)
 uiStroke.Parent = mainFrame
 
--- Toggle Logic
+-- Trade Freeze Logic Placeholder
 local tradeFreezeEnabled = false
 
 toggle.MouseButton1Click:Connect(function()
@@ -98,14 +130,14 @@ toggle.MouseButton1Click:Connect(function()
 	if tradeFreezeEnabled then
 		toggle.Text = "Trade Freeze: ON"
 		toggle.BackgroundColor3 = Color3.fromRGB(120, 0, 180)
-
-		-- 🧊 INSERT YOUR ACTUAL FREEZE LOGIC HERE
+		
+		-- ⛔️ INSERT REAL TRADE FREEZE SCRIPT HERE
 		print("[VOID SCRIPTS] Trade Freeze ENABLED!")
 	else
 		toggle.Text = "Trade Freeze: OFF"
 		toggle.BackgroundColor3 = Color3.fromRGB(50, 0, 80)
-
-		-- ❄️ DISABLE FREEZE LOGIC HERE
+		
+		-- ❄️ UNFREEZE LOGIC GOES HERE
 		print("[VOID SCRIPTS] Trade Freeze DISABLED!")
 	end
 end)
