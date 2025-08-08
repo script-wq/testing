@@ -1,4 +1,4 @@
--- Void Trade Freeze GUI by Void Scripts (Draggable Fixed)
+-- Void Trade Freeze GUI by Void Scripts (Draggable + Notification)
 
 pcall(function()
     game.CoreGui:FindFirstChild("VoidTradeFreezeGUI"):Destroy()
@@ -12,7 +12,7 @@ screenGui.Name = "VoidTradeFreezeGUI"
 screenGui.Parent = playerGui
 screenGui.ResetOnSpawn = false
 
--- Intro Label (smaller)
+-- Intro Label
 local creditLabel = Instance.new("TextLabel")
 creditLabel.Size = UDim2.new(0.6, 0, 0.2, 0)
 creditLabel.Position = UDim2.new(0.2, 0, 0.4, 0)
@@ -41,7 +41,7 @@ end
 
 creditLabel:Destroy()
 
--- Main GUI Frame
+-- Main Frame
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 300, 0, 150)
 mainFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
@@ -65,7 +65,7 @@ title.TextScaled = true
 title.TextColor3 = Color3.fromRGB(200, 0, 255)
 title.Parent = mainFrame
 
--- Make title draggable (moves entire mainFrame)
+-- Make title draggable
 local dragging = false
 local dragInput, mousePos, framePos
 
@@ -116,13 +116,51 @@ local toggleCorner = Instance.new("UICorner")
 toggleCorner.CornerRadius = UDim.new(0, 8)
 toggleCorner.Parent = toggle
 
--- Stroke
+-- UI Glow
 local uiStroke = Instance.new("UIStroke")
 uiStroke.Thickness = 2
 uiStroke.Color = Color3.fromRGB(255, 0, 255)
 uiStroke.Parent = mainFrame
 
--- Trade Freeze Logic Placeholder
+-- Notification Function
+local function showNotification(message)
+	local notif = Instance.new("TextLabel")
+	notif.Size = UDim2.new(0.3, 0, 0.07, 0)
+	notif.Position = UDim2.new(0.35, 0, 0.93, 0)
+	notif.BackgroundColor3 = Color3.fromRGB(60, 0, 90)
+	notif.TextColor3 = Color3.fromRGB(255, 255, 255)
+	notif.TextStrokeTransparency = 0.4
+	notif.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+	notif.Font = Enum.Font.GothamBold
+	notif.TextScaled = true
+	notif.Text = message
+	notif.Parent = screenGui
+	notif.BackgroundTransparency = 1
+	notif.TextTransparency = 1
+
+	local corner = Instance.new("UICorner", notif)
+	corner.CornerRadius = UDim.new(0, 8)
+
+	-- Fade In
+	for i = 1, 0, -0.1 do
+		notif.BackgroundTransparency = i
+		notif.TextTransparency = i
+		wait(0.02)
+	end
+
+	wait(2)
+
+	-- Fade Out
+	for i = 0, 1, 0.1 do
+		notif.BackgroundTransparency = i
+		notif.TextTransparency = i
+		wait(0.02)
+	end
+
+	notif:Destroy()
+end
+
+-- Toggle Logic
 local tradeFreezeEnabled = false
 
 toggle.MouseButton1Click:Connect(function()
@@ -130,14 +168,16 @@ toggle.MouseButton1Click:Connect(function()
 	if tradeFreezeEnabled then
 		toggle.Text = "Trade Freeze: ON"
 		toggle.BackgroundColor3 = Color3.fromRGB(120, 0, 180)
-		
-		-- ⛔️ INSERT REAL TRADE FREEZE SCRIPT HERE
+		showNotification("Trade freeze is: ON")
+
+		-- 🔒 INSERT TRADE FREEZE LOGIC HERE
 		print("[VOID SCRIPTS] Trade Freeze ENABLED!")
 	else
 		toggle.Text = "Trade Freeze: OFF"
 		toggle.BackgroundColor3 = Color3.fromRGB(50, 0, 80)
-		
-		-- ❄️ UNFREEZE LOGIC GOES HERE
+		showNotification("Trade freeze is: OFF")
+
+		-- ❄️ INSERT UNFREEZE LOGIC HERE
 		print("[VOID SCRIPTS] Trade Freeze DISABLED!")
 	end
 end)
