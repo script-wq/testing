@@ -1,4 +1,4 @@
--- Void Trade Freeze GUI by Void Scripts (Draggable + Notification)
+-- Void Trade Freeze GUI by Void Scripts (Draggable + Notification + Simple Button Text)
 
 pcall(function()
     game.CoreGui:FindFirstChild("VoidTradeFreezeGUI"):Destroy()
@@ -109,7 +109,7 @@ toggle.BackgroundColor3 = Color3.fromRGB(50, 0, 80)
 toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
 toggle.TextScaled = true
 toggle.Font = Enum.Font.GothamSemibold
-toggle.Text = "Trade Freeze: OFF"
+toggle.Text = "Trade Freeze"
 toggle.Parent = mainFrame
 
 local toggleCorner = Instance.new("UICorner")
@@ -166,18 +166,16 @@ local tradeFreezeEnabled = false
 toggle.MouseButton1Click:Connect(function()
 	tradeFreezeEnabled = not tradeFreezeEnabled
 	if tradeFreezeEnabled then
-		toggle.Text = "Trade Freeze: ON"
 		toggle.BackgroundColor3 = Color3.fromRGB(120, 0, 180)
 		showNotification("Trade freeze is: ON")
 
 		-- 🔒 INSERT TRADE FREEZE LOGIC HERE
 		print("[VOID SCRIPTS] Trade Freeze ENABLED!")
 	else
-		toggle.Text = "Trade Freeze: OFF"
 		toggle.BackgroundColor3 = Color3.fromRGB(50, 0, 80)
 		showNotification("Trade freeze is: OFF")
 
-		-- ❄️ INSERT UNFREEZE LOGIC HERE
+		-- ❄️ UNFREEZE LOGIC GOES HERE
 		print("[VOID SCRIPTS] Trade Freeze DISABLED!")
 	end
 end)
